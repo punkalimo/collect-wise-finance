@@ -1,4 +1,4 @@
-const nodemailer = require("nodemailer");
+import nodemailer from "nodemailer";
 
 function escapeHtml(input) {
   return String(input)
@@ -9,7 +9,7 @@ function escapeHtml(input) {
     .replaceAll("'", "&#039;");
 }
 
-module.exports = async (req, res) => {
+export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ message: "Method not allowed" });
 
   const { name, email, message } = req.body || {};
@@ -50,4 +50,4 @@ module.exports = async (req, res) => {
     console.error(e);
     return res.status(500).json({ message: "Failed to send" });
   }
-};
+}
