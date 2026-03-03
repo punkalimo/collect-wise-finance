@@ -8,21 +8,29 @@ import TeamSection from "@/components/TeamSection";
 import CTASection from "@/components/CTASection";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
+import { Seo } from "@/components/Seo";
 
 const Index = () => {
   return (
-    <div className="min-h-screen">
-      <Navbar />
-      <HeroSection />
-      <AboutSection />
-      <MissionSection />
-      <ServicesSection />
-      <TeamSection />
-      <WhyUsSection />
-      <CTASection />
-      <ContactSection />
-      <Footer />
-    </div>
+    <>
+      <Seo
+        title="CollectTech & Accounting Solutions - Professional Financial Support"
+        description="CollectTech provides professional outsourced finance services including accounts receivable, credit control, accounts payable, financial reporting, and tax compliance for growing businesses and SMEs in Zambia."
+        path="/"
+      />
+      <div className="min-h-screen">
+        <Navbar />
+        <HeroSection />
+        <AboutSection />
+        <MissionSection />
+        <ServicesSection />
+        <TeamSection />
+        <WhyUsSection />
+        <CTASection />
+        <ContactSection />
+        <Footer />
+      </div>
+    </>
   );
 };
 
