@@ -89,7 +89,7 @@ const ContactSection = () => {
                   Email
                 </p>
                 <p className="text-muted-foreground font-body text-sm">
-                  collecttech.finance@gmail.com
+                  info@collectechfinance.com
                 </p>
               </div>
             </div>
