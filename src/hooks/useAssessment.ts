@@ -41,7 +41,7 @@ export const useAssessment = () => {
 
   // Save to localStorage whenever data changes
   useEffect(() => {
-    if (!isLoading && step !== 'results') {
+    if (!isLoading && step !== 'completed' && step !== 'submitting') {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     }
   }, [data, isLoading, step]);
@@ -154,6 +154,16 @@ export const useAssessment = () => {
     return data.currentSection === assessmentSections.length;
   }, [data.currentSection]);
 
+  const goToDetails = useCallback(() => {
+    setStep('details');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
+  const completeAssessment = useCallback(() => {
+    setStep('completed');
+    localStorage.removeItem(STORAGE_KEY);
+  }, []);
+
   const isFirstSection = useCallback((): boolean => {
     return data.currentSection === 1;
   }, [data.currentSection]);
@@ -175,7 +185,7 @@ export const useAssessment = () => {
   const submitAssessment = useCallback((): AssessmentScore => {
     const calculatedScore = calculateScore(data.answers);
     setScore(calculatedScore);
-    setStep('results');
+    setStep('details');
     localStorage.removeItem(STORAGE_KEY);
     return calculatedScore;
   }, [data.answers]);
@@ -197,6 +207,7 @@ export const useAssessment = () => {
 
   return {
     step,
+    setStep,
     data,
     score,
     hasSavedProgress,

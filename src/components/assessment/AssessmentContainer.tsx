@@ -2,15 +2,16 @@ import { useState, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAssessment } from '@/hooks/useAssessment';
 import { calculateScore } from '@/lib/scoring';
-import { generateSubmissionId, generateEmailHtml } from '@/lib/email-template';
+import { generateSubmissionId } from '@/lib/email-template';
 import {
   ProgressBar,
   SectionNavigator,
   QuestionCard,
   NavigationControls,
   AssessmentIntro,
-  ResultsSummary,
   ResumeDialog,
+  UserDetailsForm,
+  CompletionScreen,
 } from './AssessmentComponents';
 
 interface AssessmentContainerProps {
@@ -21,6 +22,7 @@ export const AssessmentContainer = ({ onRequestConsultation }: AssessmentContain
   const [submissionId, setSubmissionId] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [showDetailsForm, setShowDetailsForm] = useState(false);
 
   const {
     step,
@@ -48,6 +50,7 @@ export const AssessmentContainer = ({ onRequestConsultation }: AssessmentContain
     getTotalAnswered,
     submitAssessment,
     getAllAnswers,
+    setStep,
   } = useAssessment();
 
   const currentSection = getCurrentSection();
@@ -55,12 +58,17 @@ export const AssessmentContainer = ({ onRequestConsultation }: AssessmentContain
   const totalAnswered = getTotalAnswered();
   const isAllComplete = totalAnswered === 25;
 
-  // Handle submission
-  const handleSubmit = useCallback(async () => {
-    if (!isAllComplete) return;
-
+  // Go to details form when user completes all questions
+  const goToDetailsForm = useCallback(() => {
+    if (isAllComplete) {
+      setStep('details');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [isAllComplete, setStep]);
+  const handleUserDetailsSubmit = useCallback(async (details: { name: string; email: string; phone: string; companyName?: string }) => {
     setIsSubmitting(true);
     setSubmitError(null);
+    setStep('submitting');
 
     try {
       // Calculate score
@@ -71,11 +79,12 @@ export const AssessmentContainer = ({ onRequestConsultation }: AssessmentContain
       // Get all answers with text
       const allAnswers = getAllAnswers();
 
-      // Send to API (relative path like contact form)
+      // Send to API with user details
       const response = await fetch('/api/assessment', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          userDetails: details,
           answers: allAnswers,
           score: calculatedScore.totalScore,
           interpretation: calculatedScore.interpretation,
@@ -91,15 +100,17 @@ export const AssessmentContainer = ({ onRequestConsultation }: AssessmentContain
         throw new Error(message || 'Failed to submit assessment');
       }
 
-      // Submit and show results
-      submitAssessment();
+      // Complete the assessment - don't show results
+      setStep('completed');
+      localStorage.removeItem('financial-health-assessment');
     } catch (error) {
       console.error('Submission error:', error);
       setSubmitError('Failed to submit. Please try again.');
+      setStep('details');
     } finally {
       setIsSubmitting(false);
     }
-  }, [isAllComplete, data.answers, getAllAnswers, submitAssessment]);
+  }, [data.answers, getAllAnswers, setStep]);
 
   // Show loading
   if (isLoading) {
@@ -129,11 +140,35 @@ export const AssessmentContainer = ({ onRequestConsultation }: AssessmentContain
     );
   }
 
-  // Show results
-  if (step === 'results' && score) {
+  // Show user details form
+  if (step === 'details') {
     return (
       <div className="min-h-screen bg-white py-12">
-        <ResultsSummary score={score} submissionId={submissionId} />
+        <UserDetailsForm 
+          onSubmit={handleUserDetailsSubmit} 
+          isSubmitting={isSubmitting}
+        />
+      </div>
+    );
+  }
+
+  // Show completion screen
+  if (step === 'completed') {
+    return (
+      <div className="min-h-screen bg-white py-12">
+        <CompletionScreen />
+      </div>
+    );
+  }
+
+  // Show submitting state
+  if (step === 'submitting') {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#d4af37] mx-auto mb-4" />
+          <p className="text-gray-600">Submitting your assessment...</p>
+        </div>
       </div>
     );
   }
@@ -221,7 +256,7 @@ export const AssessmentContainer = ({ onRequestConsultation }: AssessmentContain
                     isAllComplete={isAllComplete}
                     onPrev={prevSection}
                     onNext={nextSection}
-                    onSubmit={handleSubmit}
+                    onSubmit={goToDetailsForm}
                   />
 
                   {submitError && (

@@ -1,6 +1,7 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Clock, CheckCircle, AlertCircle } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Clock, CheckCircle, AlertCircle, Mail, Phone, Building } from 'lucide-react';
 import { assessmentSections } from '@/lib/assessment-data';
 import type { UseAssessmentReturn } from '@/hooks/useAssessment';
 
@@ -491,6 +492,179 @@ export const ResumeDialog = ({ onResume, onStartFresh }: ResumeDialogProps) => {
           </button>
         </div>
       </motion.div>
+    </motion.div>
+  );
+};
+
+interface UserDetailsFormProps {
+  onSubmit: (details: { name: string; email: string; phone: string; companyName?: string }) => void;
+  isSubmitting: boolean;
+}
+
+export const UserDetailsForm = ({ onSubmit, isSubmitting }: UserDetailsFormProps) => {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [companyName, setCompanyName] = useState('');
+  const [error, setError] = useState('');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!name.trim()) {
+      setError('Please enter your name');
+      return;
+    }
+    if (!email.trim() || !email.includes('@')) {
+      setError('Please enter a valid email address');
+      return;
+    }
+    
+    onSubmit({ name, email, phone, companyName: companyName || undefined });
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="max-w-xl mx-auto py-8 px-6"
+    >
+      <div className="bg-white rounded-xl border border-gray-200 p-8 shadow-sm">
+        <div className="text-center mb-8">
+          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#d4af37] to-[#f5d76e] flex items-center justify-center mx-auto mb-4">
+            <Mail className="w-8 h-8 text-gray-900" />
+          </div>
+          <h1 className="text-2xl font-display font-bold text-gray-900 mb-2">
+            Almost Done!
+          </h1>
+          <p className="text-gray-600">
+            Please provide your contact details so we can follow up with your assessment results.
+          </p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Full Name <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => { setName(e.target.value); setError(''); }}
+              placeholder="Enter your full name"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#d4af37]/50 focus:border-[#d4af37] text-base"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Email Address <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => { setEmail(e.target.value); setError(''); }}
+              placeholder="Enter your email address"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#d4af37]/50 focus:border-[#d4af37] text-base"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Phone Number
+            </label>
+            <input
+              type="tel"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="Enter your phone number (optional)"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#d4af37]/50 focus:border-[#d4af37] text-base"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Company Name
+            </label>
+            <input
+              type="text"
+              value={companyName}
+              onChange={(e) => setCompanyName(e.target.value)}
+              placeholder="Enter your company name (optional)"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#d4af37]/50 focus:border-[#d4af37] text-base"
+            />
+          </div>
+
+          {error && (
+            <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
+              {error}
+            </div>
+          )}
+
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full px-6 py-3 rounded-lg bg-gradient-to-r from-[#d4af37] to-[#f5d76e] text-gray-900 font-semibold text-base hover:opacity-90 transition-opacity disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            {isSubmitting ? 'Submitting...' : 'Submit Assessment'}
+          </button>
+        </form>
+      </div>
+    </motion.div>
+  );
+};
+
+interface CompletionScreenProps {}
+
+export const CompletionScreen = () => {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="max-w-2xl mx-auto py-12 px-6"
+    >
+      <div className="text-center mb-8">
+        <div className="w-20 h-20 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center mx-auto mb-6">
+          <CheckCircle className="w-12 h-12 text-white" />
+        </div>
+        <h1 className="text-3xl md:text-4xl font-display font-bold text-gray-900 mb-4">
+          Assessment Completed
+        </h1>
+        <p className="text-lg text-gray-600">
+          Thank you for completing the Business Financial Health Pre-Assessment.
+        </p>
+      </div>
+
+      <div className="bg-white rounded-xl border border-gray-200 p-6 mb-8 shadow-sm">
+        <p className="text-gray-600 mb-4">
+          Your responses provide a high-level view of your financial control environment, compliance positioning, receivables oversight, and governance structure. 
+        </p>
+        <p className="text-gray-600">
+          If you would like a professional review of your responses and a structured recommendation aligned to your operational needs, you are welcome to request a consultation through our contact page.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <a
+          href="#contact"
+          className="flex flex-col items-center gap-3 p-6 rounded-xl border-2 border-[#d4af37] bg-[#d4af37]/5 hover:bg-[#d4af37]/10 transition-colors"
+        >
+          <Mail className="w-8 h-8 text-[#b8962e]" />
+          <span className="font-semibold text-gray-900">Request Consultation</span>
+          <span className="text-sm text-gray-500 text-center">Get a professional review of your assessment</span>
+        </a>
+        
+        <Link
+          to="/"
+          className="flex flex-col items-center gap-3 p-6 rounded-xl border-2 border-gray-200 bg-gray-50 hover:bg-gray-100 transition-colors"
+        >
+          <Building className="w-8 h-8 text-gray-600" />
+          <span className="font-semibold text-gray-900">Back to Home</span>
+          <span className="text-sm text-gray-500 text-center">Explore our services</span>
+        </Link>
+      </div>
     </motion.div>
   );
 };

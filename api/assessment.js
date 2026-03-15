@@ -129,7 +129,7 @@ function getOptionLabel(questionId, answer) {
   return answer;
 }
 
-function generateEmailHtml(submissionId, answers, score, interpretation, sectionScores) {
+function generateEmailHtml(submissionId, answers, score, interpretation, sectionScores, clientName, clientEmail, clientPhone, companyName) {
   const ratingColor = getRatingColor(score.rating);
 
   let questionsHtml = "";
@@ -179,6 +179,29 @@ function generateEmailHtml(submissionId, answers, score, interpretation, section
     </div>
     
     <div style="padding: 30px;">
+      <!-- User Details Section -->
+      <div style="background: #f9fafb; border: 1px solid #e5e7eb; padding: 20px; border-radius: 8px; margin-bottom: 25px;">
+        <h3 style="color: #1a1a2e; font-size: 16px; margin-bottom: 12px;">Contact Information</h3>
+        <table style="width: 100%; font-size: 14px;">
+          <tr>
+            <td style="padding: 6px 0; color: #6b7280; width: 140px;"><strong>Name:</strong></td>
+            <td style="padding: 6px 0; color: #1a1a2e;">${escapeHtml(clientName)}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 0; color: #6b7280;"><strong>Email:</strong></td>
+            <td style="padding: 6px 0; color: #1a1a2e;">${escapeHtml(clientEmail)}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 0; color: #6b7280;"><strong>Phone:</strong></td>
+            <td style="padding: 6px 0; color: #1a1a2e;">${escapeHtml(clientPhone)}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 0; color: #6b7280;"><strong>Company:</strong></td>
+            <td style="padding: 6px 0; color: #1a1a2e;">${escapeHtml(companyName)}</td>
+          </tr>
+        </table>
+      </div>
+      
       <div style="background: ${ratingColor}15; border: 2px solid ${ratingColor}30; padding: 25px; border-radius: 12px; text-align: center; margin-bottom: 25px;">
         <h2 style="margin: 0 0 10px 0; color: ${ratingColor}; font-size: 36px; font-weight: 700;">${score.total} / ${score.max}</h2>
         <p style="margin: 0; color: #1a1a2e; font-size: 18px; font-weight: 600;">${escapeHtml(interpretation)}</p>
@@ -216,11 +239,17 @@ export default async function handler(req, res) {
     return res.status(405).json({ message: "Method not allowed" });
   }
 
-  const { answers, score, interpretation, sectionScores, clientEmail, clientName } = req.body || {};
+  const { answers, score, interpretation, sectionScores, userDetails } = req.body || {};
 
   if (!answers || !score || !interpretation) {
     return res.status(400).json({ message: "Missing required fields" });
   }
+
+  // Extract user details
+  const clientName = userDetails?.name || 'Not provided';
+  const clientEmail = userDetails?.email || 'Not provided';
+  const clientPhone = userDetails?.phone || 'Not provided';
+  const companyName = userDetails?.companyName || 'Not provided';
 
   const submissionId = generateSubmissionId();
 
@@ -242,7 +271,11 @@ export default async function handler(req, res) {
       answers,
       { total: score, max: 125 },
       interpretation,
-      sectionScores
+      sectionScores,
+      clientName,
+      clientEmail,
+      clientPhone,
+      companyName
     );
 
     await transporter.sendMail({
@@ -274,8 +307,10 @@ export default async function handler(req, res) {
         score,
         interpretation,
         sections: sectionScores || {},
-        clientEmail: clientEmail || null,
         clientName: clientName || null,
+        clientEmail: clientEmail || null,
+        clientPhone: clientPhone || null,
+        companyName: companyName || null,
         status: "new",
         notes: "",
       };

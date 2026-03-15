@@ -77,4 +77,11 @@ export interface SubmissionLog {
   notes: string;
 }
 
-export type AssessmentStep = 'intro' | 'form' | 'results';
+export type AssessmentStep = 'intro' | 'form' | 'details' | 'submitting' | 'completed';
+
+export interface UserDetails {
+  name: string;
+  email: string;
+  phone: string;
+  companyName?: string;
+}
