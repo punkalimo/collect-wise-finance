@@ -58,6 +58,13 @@ export default defineConfig(({ mode }) => ({
     hmr: {
       overlay: false,
     },
+    proxy: {
+      // Forward API calls to the local Vercel dev server so /api routes work in dev
+      "/api": {
+        target: "http://127.0.0.1:3000",
+        changeOrigin: true,
+      },
+    },
   },
   plugins: [
     react(), 

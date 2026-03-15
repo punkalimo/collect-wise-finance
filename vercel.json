@@ -10,6 +10,10 @@
     "api/contact.js": {
       "memory": 1024,
       "maxDuration": 30
+    },
+    "api/assessment.js": {
+      "memory": 1024,
+      "maxDuration": 30
     }
   }
 }
