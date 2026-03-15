@@ -225,13 +225,13 @@ export const AssessmentContainer = ({ onRequestConsultation }: AssessmentContain
                   />
 
                   {submitError && (
-                    <div className="mt-4 p-4 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
+                    <div className="mt-4 p-4 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
                       {submitError}
                     </div>
                   )}
 
                   {isSubmitting && (
-                    <div className="mt-4 flex items-center gap-3 text-slate-400">
+                    <div className="mt-4 flex items-center gap-3 text-gray-500">
                       <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-[#d4af37]" />
                       Submitting your assessment...
                     </div>
