@@ -6,7 +6,6 @@ import logo from "@/assets/logo.jpg";
 const links = [
   { label: "About", href: "#about", isRoute: false },
   { label: "Services", href: "#services", isRoute: false },
-  { label: "Assessment", href: "/assessment", isRoute: true },
   { label: "Contact", href: "#contact", isRoute: false },
 ];
 
