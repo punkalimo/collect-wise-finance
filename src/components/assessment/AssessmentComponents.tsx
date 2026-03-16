@@ -444,7 +444,7 @@ export const ResultsSummary = ({ score, submissionId }: ResultsSummaryProps) => 
           aligned to your operational needs.
         </p>
         <a
-          href="#contact"
+          href="/#contact"
           className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg bg-gradient-to-r from-[#d4af37] to-[#f5d76e] text-gray-900 font-semibold hover:opacity-90 transition-opacity"
         >
           Request Consultation
@@ -648,7 +648,7 @@ export const CompletionScreen = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <a
-          href="#contact"
+          href="/#contact"
           className="flex flex-col items-center gap-3 p-6 rounded-xl border-2 border-[#d4af37] bg-[#d4af37]/5 hover:bg-[#d4af37]/10 transition-colors"
         >
           <Mail className="w-8 h-8 text-[#b8962e]" />
