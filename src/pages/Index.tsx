@@ -18,7 +18,7 @@ const Index = () => {
         description="CollectTech provides professional outsourced finance services including accounts receivable, credit control, accounts payable, financial reporting, and tax compliance for growing businesses and SMEs in Zambia."
         path="/"
       />
-      <div id="main-content" className="min-h-screen">
+      <div className="min-h-screen">
         <Navbar />
         <HeroSection />
         <AboutSection />
